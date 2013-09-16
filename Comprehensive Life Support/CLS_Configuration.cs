@@ -109,6 +109,8 @@ RESOURCE_DEFINITION
 	/// <summary>
 	/// Load in the CLS resource file. We're doing this so we only have to worry about 
 	/// CLS-based resources whenever we do something with a resource.
+	/// 
+	/// Asynchronus, should allow the main menu to continue even as it's loading.
 	/// </summary><returns></returns>
 	private static async Task LoadCLSResources() {
 		using (StreamReader sr = new StreamReader(configFilePath)) {
