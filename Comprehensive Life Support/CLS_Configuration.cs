@@ -113,7 +113,7 @@ RESOURCE_DEFINITION
 	/// Asynchronus, should allow the main menu to continue even as it's loading.
 	/// </summary><returns></returns>
 	private static void LoadCLSResources() {
-		using (StreamReader sr = new StreamReader(configFilePath)) {
+		using (StreamReader sr = new StreamReader(resourceFilePath)) {
 			CDebug.log("Resource loader not implemented.");
 			string line = "";
 			string[] parts;
@@ -136,7 +136,7 @@ RESOURCE_DEFINITION
 						line = sr.ReadLine();
 					}
 					CLSResources.Add(rNode);
-					CDebug.log(rNode.ToString());
+					CDebug.log("Loaded resource:\n" + rNode.ToString());
 				}
 
 				line = sr.ReadLine();
