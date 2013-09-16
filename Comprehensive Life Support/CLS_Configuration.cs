@@ -136,7 +136,6 @@ RESOURCE_DEFINITION
 						line = sr.ReadLine();
 					}
 					CLSResources.Add(rNode);
-					CDebug.log("Loaded resource:\n" + rNode.ToString());
 				}
 
 				line = sr.ReadLine();
@@ -167,8 +166,6 @@ RESOURCE_DEFINITION
 				}
 				else { } //Load other things! New things! Not implemented things!
 			}
-			foreach (KeyValuePair<string, double> KVP in ratesPerKerbal)
-				CDebug.log(KVP.Key + ": " + KVP.Value);
 		}
 	}
 	#endregion
