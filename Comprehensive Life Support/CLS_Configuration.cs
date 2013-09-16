@@ -112,7 +112,7 @@ RESOURCE_DEFINITION
 	/// 
 	/// Asynchronus, should allow the main menu to continue even as it's loading.
 	/// </summary><returns></returns>
-	private static async Task LoadCLSResources() {
+	private static void LoadCLSResources() {
 		using (StreamReader sr = new StreamReader(configFilePath)) {
 			CDebug.log("Resource loader not implemented.");
 			string line = "";
@@ -120,25 +120,26 @@ RESOURCE_DEFINITION
 			string[] delimiters = { "=", "\t", " " };
 			ConfigNode rNode;
 
-			line = await sr.ReadLineAsync();
+			line = sr.ReadLine();
 			while (line != null) {
 				if (line.Trim().Equals("RESOURCE_DEFINITION")) {
 					rNode = new ConfigNode("RESOURCE_DEFINITON");
-					line = await sr.ReadLineAsync();		//Jump to the next line before dropping into the definition.
+					line = sr.ReadLine();		//Jump to the next line before dropping into the definition.
 					if (line.Contains('{'))
-						line = await sr.ReadLineAsync();		//Read another line if the opening bracket is on the next line.
+						line = sr.ReadLine();		//Read another line if the opening bracket is on the next line.
 					while (!line.Contains('}')) {
 						parts = line.Split(delimiters, 2, StringSplitOptions.RemoveEmptyEntries);
 						if (parts.Length == 2)
 							rNode.AddValue(parts[0], parts[1]);
 						else
 							print("[CLS][WARN]: Some line in the resources file is wrong: \n\t" + line);
-						line = await sr.ReadLineAsync();
+						line = sr.ReadLine();
 					}
 					CLSResources.Add(rNode);
+					CDebug.log(rNode.ToString());
 				}
 
-				line = await sr.ReadLineAsync();
+				line = sr.ReadLine();
 			}
 		}
 	}
