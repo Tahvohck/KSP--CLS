@@ -15,7 +15,8 @@ class CLS_Configuration : MonoBehaviour
 {
 	#region ACCESSIBLE MEMBERS
 	internal static Dictionary<string, double> ratesPerKerbal = new Dictionary<string,double>();
-	internal static List<ConfigNode> CLSResources = new List<ConfigNode>();
+	internal static List<ConfigNode> CLSResources = new List<ConfigNode>();	//For dynamically adding resources to parts.
+	internal static List<string> CLSResourceNames = new List<string>();		//For checking CLS-based resources.
 	#endregion
 	#region PRIVATE MEMBERS
 	private static string APPDIR = KSPUtil.ApplicationRootPath;
@@ -146,6 +147,7 @@ RESOURCE_DEFINITION
 						line = sr.ReadLine();
 					}
 					CLSResources.Add(rNode);
+					CLSResourceNames.Add(rNode.GetValue("name"));
 				}
 
 				line = sr.ReadLine();
