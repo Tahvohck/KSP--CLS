@@ -18,14 +18,14 @@ class CLS_FlightGui : MonoBehaviour{
 
 	private static Vessel ActiveVessel;
 	private static List<Vessel> EVAKerbals;
-	private static List<PartResource>
-		connectedOxygen = new List<PartResource>(),
-		connectedCO2 = new List<PartResource>(),
-		connectedSnacks = new List<PartResource>(),
-		connectedWater = new List<PartResource>();
+	//private static List<PartResource>
+	//	connectedOxygen = new List<PartResource>(),
+	//	connectedCO2 = new List<PartResource>(),
+	//	connectedSnacks = new List<PartResource>(),
+	//	connectedWater = new List<PartResource>();
 
-	//I may use this eventually instead of the above lists.
-	//private Dictionary<String, List<PartResource>> Resources;
+	//This is used in place of the above lists.
+	private Dictionary<String, List<PartResource>> Resources;
 	#endregion
 
 
@@ -94,8 +94,12 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
 	/// </summary>
 	private void buildResourceTankLists() {
-		foreach(Part p in ActiveVessel.Parts)
-			foreach(PartResource res in p.Resources)
-				print(p.partName + ": " + res.resourceName); //Do things. Leaving this out until I write the config code.
+		foreach (Part p in ActiveVessel.Parts)
+			foreach (PartResource res in p.Resources) {
+				if (Resources.ContainsKey(res.resourceName))
+					Resources[res.resourceName].Add(res);
+				else
+					Resources[res.resourceName] = new List<PartResource> {res};
+			}
 	}
 }
