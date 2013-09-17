@@ -91,16 +91,26 @@ RESOURCE_DEFINITION
 
 
 	#region SAVE FUNCTIONS
+	/// <summary>Save the configuration file. Update as more entries are added to the config file.
+	/// </summary>
 	internal static void SaveConfig() {
-		CDebug.log("Saver not implemented.");
+		CDebug.log("Saver not complete.");
 		string toSave = "";
-		toSave += SaveRPKs();
+		GenerateConfigfilePartRPK(ref toSave);
+
+		System.IO.File.WriteAllText(configFilePath, toSave);
 	}
 
 
-	private static string SaveRPKs() {
-		CDebug.log("RPK saver not implemented.");
-		return "";
+	/// <summary>Generate the RPK section of the config.
+	/// </summary>
+	/// <returns></returns>
+	private static void GenerateConfigfilePartRPK(ref string fileContent) {
+		fileContent += "[RPK]\n";
+		foreach (KeyValuePair<string, double> kvp in ratesPerKerbal) {
+			fileContent += string.Format("{0} = {1}\n", kvp.Key, kvp.Value);
+		}
+		fileContent += "[/RPK]\n";
 	}
 	#endregion
 
