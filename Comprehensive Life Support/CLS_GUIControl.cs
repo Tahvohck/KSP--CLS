@@ -12,8 +12,11 @@ using UnityEngine;
 class CLS_FlightGui : MonoBehaviour{
 	#region CLASS VARIABLES
 	private static Rect StatusPanelBox = new Rect(145, 0, 300, 400);
+	private static Rect SettingsBox = new Rect(145, 0, 300, 400);
 	[KSPField(isPersistant = true)]
-	private static bool StatusPanelVisible = true;
+	private static bool VisibleStatusWindow = true;
+	[KSPField(isPersistant = true)]
+	private static bool VisibleSettingsWindow = false;
 	private static bool HideUI = false;
 
 	private static Vessel ActiveVessel;
@@ -54,20 +57,6 @@ class CLS_FlightGui : MonoBehaviour{
 
 
 	#region HOOKS
-	/// <summary>
-	/// 
-	/// </summary>
-	private void OnGUI() {
-		//Manual show/hide for the Status panel. Only 'L' is listening for keydown, 
-		//otherwise user would have to press both keys during the same frame.
-		if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftControl)) && Input.GetKeyDown(KeyCode.L))
-			StatusPanelVisible = !StatusPanelVisible;
-
-		if (!HideUI && StatusPanelVisible)
-			StatusPanelBox = GUILayout.Window("CLSStatus".GetHashCode(), StatusPanelBox, drawStatusWindow, "ClearScreen Life Support");
-	}
-
-
 	private void HOOK_VesselChange(Vessel v) { }
 
 
@@ -84,7 +73,25 @@ class CLS_FlightGui : MonoBehaviour{
 
 
 	#region GUI CONTROLS
-	private void drawStatusWindow(int id) { }
+	/// <summary>
+	/// 
+	/// </summary>
+	private void OnGUI() {
+		if (!HideUI && VisibleStatusWindow)
+			StatusPanelBox = GUI.Window("CLSStatus".GetHashCode(), StatusPanelBox, drawStatusWindow, "ClearScreen Life Support");
+		if (!HideUI && VisibleSettingsWindow)
+			SettingsBox = GUI.Window("CLSSettings".GetHashCode(), SettingsBox, drawSettingsWindow, "CLS Settings");
+	}
+
+
+	private void drawStatusWindow(int id) {
+		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "")) { VisibleStatusWindow = false; }
+
+		GUILayout.Label(ActiveVessel.vesselName);
+
+		GUI.DragWindow();
+	}
+
 
 	private void drawSettingsWindow(int id) { }
 
@@ -101,5 +108,18 @@ class CLS_FlightGui : MonoBehaviour{
 				else
 					Resources[res.resourceName] = new List<PartResource> {res};
 			}
+	}
+
+
+	/// <summary>
+	/// Anything I want to only happen once per frame goes here.
+	/// </summary>
+	private void Update() {
+		//Manual show/hide for the Status panel. Only 'P' is listening for keydown, 
+		//otherwise user would have to press both keys during the same frame.
+		if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.P)) {
+			VisibleStatusWindow = !VisibleStatusWindow;
+			CDebug.log("Ctrl + P chord pressed.");
+		}
 	}
 }
