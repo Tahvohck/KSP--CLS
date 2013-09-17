@@ -70,7 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Configs\CLSResources.cfg" />
-    <None Include="Configs\Comprehensive Life Support.cfg" />
     <None Include="Configs\ModuleManager.cfg" />
     <None Include="External\KSP.log" />
   </ItemGroup>
