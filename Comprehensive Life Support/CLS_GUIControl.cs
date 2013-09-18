@@ -36,7 +36,7 @@ class CLS_FlightGui : MonoBehaviour{
 
 	#region INIT FUNCTIONS
 	/// <summary>
-	/// 
+	/// Primary role is registering all hooks that will come into play later.
 	/// </summary>
 	private void Awake() {
 		GameEvents.onVesselChange.Add(HOOK_VesselChange);
@@ -44,6 +44,7 @@ class CLS_FlightGui : MonoBehaviour{
 		GameEvents.onCrewBoardVessel.Add(HOOK_EVA_Start);
 		GameEvents.onHideUI.Add(HOOK_HideUI);
 		GameEvents.onShowUI.Add(HOOK_ShowUI);
+		GameEvents.onFlightReady.Add(HOOK_FlightReady);
 	}
 
 
@@ -54,6 +55,18 @@ class CLS_FlightGui : MonoBehaviour{
 		//buildResourceTankLists();
 	}
 	#endregion
+
+
+	/// <summary> Anything I want to only happen once per frame goes here.
+	/// </summary>
+	private void Update() {
+		//Manual show/hide for the Status panel. Only 'P' is listening for keydown, 
+		//otherwise user would have to press both keys during the same frame.
+		if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.P)) {
+			VisibleStatusWindow = !VisibleStatusWindow;
+			CDebug.log("Ctrl + P chord pressed.");
+		}
+	}
 
 
 	#region HOOKS
@@ -69,6 +82,9 @@ class CLS_FlightGui : MonoBehaviour{
 	private void HOOK_HideUI() { HideUI = true; }
 	private void HOOK_ShowUI() { HideUI = false; }
 
+	private void HOOK_FlightReady() {
+		CDebug.log("Flight ready Event.");
+	}
 	#endregion
 
 
@@ -113,18 +129,5 @@ class CLS_FlightGui : MonoBehaviour{
 					Resources[res.resourceName].Add(res);
 				else
 					Resources[res.resourceName] = new List<PartResource> { res };
-	}
-
-
-	/// <summary>
-	/// Anything I want to only happen once per frame goes here.
-	/// </summary>
-	private void Update() {
-		//Manual show/hide for the Status panel. Only 'P' is listening for keydown, 
-		//otherwise user would have to press both keys during the same frame.
-		if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.P)) {
-			VisibleStatusWindow = !VisibleStatusWindow;
-			CDebug.log("Ctrl + P chord pressed.");
-		}
 	}
 }
