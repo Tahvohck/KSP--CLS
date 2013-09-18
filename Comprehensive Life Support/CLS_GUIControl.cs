@@ -84,10 +84,16 @@ class CLS_FlightGui : MonoBehaviour{
 	}
 
 
+	private int statusToolbarSelection = 0;
+	private string[] statusToolbarButtons = {"Overview", "Generators", "EVAs" };
 	private void drawStatusWindow(int id) {
 		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "")) { VisibleStatusWindow = false; }
+		statusToolbarSelection = GUI.Toolbar(new Rect(5, 20, StatusPanelBox.width - 10, 15),statusToolbarSelection, statusToolbarButtons);
 
-		GUILayout.Label(ActiveVessel.vesselName);
+		GUILayout.Label("Test. {" + GUI.skin.label.fontSize + "}");
+		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+		//GUILayout.Label(ActiveVessel.vesselName);
+		GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
 		GUI.DragWindow();
 	}
@@ -102,12 +108,11 @@ class CLS_FlightGui : MonoBehaviour{
 	/// </summary>
 	private void buildResourceTankLists() {
 		foreach (Part p in ActiveVessel.Parts)
-			foreach (PartResource res in p.Resources) {
+			foreach (PartResource res in p.Resources)
 				if (Resources.ContainsKey(res.resourceName))
 					Resources[res.resourceName].Add(res);
 				else
-					Resources[res.resourceName] = new List<PartResource> {res};
-			}
+					Resources[res.resourceName] = new List<PartResource> { res };
 	}
 
 
