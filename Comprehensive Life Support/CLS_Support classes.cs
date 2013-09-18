@@ -37,11 +37,18 @@ internal class CLS_Resource
 	}
 }
 
-#if DEBUG
+
 class CDebug
 {
+#if DEBUG
 	public static void log(string s) {
 		UnityEngine.Debug.Log("[DEBUG][CLS]: " + s);
 	}
-}
 #endif
+
+#if VERBOSE
+	public static void verbose(string s) {
+		UnityEngine.Debug.Log("[VERBOSE][CLS]: " + s);
+	}
+#endif
+}
