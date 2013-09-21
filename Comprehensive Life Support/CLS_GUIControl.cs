@@ -19,7 +19,8 @@ class CLS_FlightGui : MonoBehaviour{
 	private static bool VisibleSettingsWindow = false;
 	private static bool HideUI = false;
 
-	private static Vessel ActiveVessel;
+	private static bool flightReady = false;
+	private static Vessel ControlledVessel;
 	private static List<Vessel> EVAKerbals;
 	//private static List<PartResource>
 	//	connectedOxygen = new List<PartResource>(),
@@ -52,6 +53,8 @@ class CLS_FlightGui : MonoBehaviour{
 	/// 
 	/// </summary>
 	private void Start() {
+		CDebug.verbose("CLS GUI Starting.");
+		ControlledVessel = FlightGlobals.ActiveVessel;
 		//buildResourceTankLists();
 	}
 	#endregion
@@ -82,8 +85,12 @@ class CLS_FlightGui : MonoBehaviour{
 	private void HOOK_HideUI() { HideUI = true; }
 	private void HOOK_ShowUI() { HideUI = false; }
 
+
 	private void HOOK_FlightReady() {
-		CDebug.log("Flight ready Event.");
+		CDebug.verbose("Flight ready Event.");
+		ControlledVessel = FlightGlobals.ActiveVessel;
+		//buildResourceTankLists();
+		CDebug.log("Flight ready Event finished.");
 	}
 	#endregion
 
@@ -93,22 +100,30 @@ class CLS_FlightGui : MonoBehaviour{
 	/// 
 	/// </summary>
 	private void OnGUI() {
-		if (!HideUI && VisibleStatusWindow)
-			StatusPanelBox = GUI.Window("CLSStatus".GetHashCode(), StatusPanelBox, drawStatusWindow, "ClearScreen Life Support");
-		if (!HideUI && VisibleSettingsWindow)
-			SettingsBox = GUI.Window("CLSSettings".GetHashCode(), SettingsBox, drawSettingsWindow, "CLS Settings");
+		//try {
+			if (!HideUI && VisibleStatusWindow)
+				StatusPanelBox = GUI.Window("CLSStatus".GetHashCode(), StatusPanelBox, drawStatusWindow, "ClearScreen Life Support");
+			if (!HideUI && VisibleSettingsWindow)
+				SettingsBox = GUI.Window("CLSSettings".GetHashCode(), SettingsBox, drawSettingsWindow, "CLS Settings");
+		//}
+		//catch (NullReferenceException nullE) {
+		//	CDebug.log(nullE.Message + "\n" + nullE.StackTrace);
+		//}
 	}
 
 
 	private int statusToolbarSelection = 0;
 	private string[] statusToolbarButtons = {"Overview", "Generators", "EVAs" };
+	/// <summary>Draw the Status Panel window.
+	/// </summary>
+	/// <param name="id"></param>
 	private void drawStatusWindow(int id) {
 		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "")) { VisibleStatusWindow = false; }
 		statusToolbarSelection = GUI.Toolbar(new Rect(5, 20, StatusPanelBox.width - 10, 15),statusToolbarSelection, statusToolbarButtons);
 
 		GUILayout.Label("Test. {" + GUI.skin.label.fontSize + "}");
 		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-		//GUILayout.Label(ActiveVessel.vesselName);
+		GUILayout.Label(ControlledVessel.vesselName);
 		GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
 		GUI.DragWindow();
@@ -117,13 +132,28 @@ class CLS_FlightGui : MonoBehaviour{
 
 	private void drawSettingsWindow(int id) { }
 
+
+	/// <summary> 
+	/// </summary>
+	internal static void showStatusWindow() {
+		CDebug.verbose("Showing status window.");
+		VisibleStatusWindow = true;
+	}
+
+
+	/// <summary>
+	/// </summary>
+	internal static void hideStatusWindow() {
+		VisibleStatusWindow = false;
+		CDebug.verbose("Hiding status window.");
+	}
 	#endregion
 
 
 	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
 	/// </summary>
 	private void buildResourceTankLists() {
-		foreach (Part p in ActiveVessel.Parts)
+		foreach (Part p in ControlledVessel.Parts)
 			foreach (PartResource res in p.Resources)
 				if (Resources.ContainsKey(res.resourceName))
 					Resources[res.resourceName].Add(res);
