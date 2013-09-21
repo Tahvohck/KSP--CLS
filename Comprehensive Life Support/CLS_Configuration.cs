@@ -125,7 +125,6 @@ RESOURCE_DEFINITION
 	/// </summary><returns></returns>
 	private static void LoadCLSResources() {
 		using (StreamReader sr = new StreamReader(resourceFilePath)) {
-			CDebug.log("Resource loader not implemented.");
 			string line = "";
 			string[] parts;
 			string[] delimiters = { "=", "\t", " " };
