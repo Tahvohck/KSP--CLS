@@ -38,6 +38,25 @@ internal class CLS_Resource
 }
 
 
+class Backend 
+{
+	internal static Dictionary<string, List<PartResource>> Resources;
+	internal static Dictionary<string, int> ResourceMaximums;
+
+	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
+	/// </summary>
+	internal static void buildResourceTankLists(Vessel ves) {
+		ResourceMaximums = new Dictionary<string,int>();
+		foreach (Part p in ves.Parts)
+			foreach (PartResource res in p.Resources)
+				if (Resources.ContainsKey(res.resourceName))
+					Resources[res.resourceName].Add(res);
+				else
+					Resources[res.resourceName] = new List<PartResource> { res };
+	}
+}
+
+
 class CDebug
 {
 #if DEBUG

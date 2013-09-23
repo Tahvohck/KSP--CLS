@@ -29,7 +29,6 @@ class CLS_FlightGui : MonoBehaviour{
 	//	connectedWater = new List<PartResource>();
 
 	//This is used in place of the above lists.
-	private Dictionary<String, List<PartResource>> Resources;
 	#endregion
 
 
@@ -55,7 +54,7 @@ class CLS_FlightGui : MonoBehaviour{
 	private void Start() {
 		CDebug.verbose("CLS GUI Starting.");
 		ControlledVessel = FlightGlobals.ActiveVessel;
-		//buildResourceTankLists();
+		Backend.buildResourceTankLists(ControlledVessel);
 	}
 	#endregion
 
@@ -148,16 +147,4 @@ class CLS_FlightGui : MonoBehaviour{
 		CDebug.verbose("Hiding status window.");
 	}
 	#endregion
-
-
-	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
-	/// </summary>
-	private void buildResourceTankLists() {
-		foreach (Part p in ControlledVessel.Parts)
-			foreach (PartResource res in p.Resources)
-				if (Resources.ContainsKey(res.resourceName))
-					Resources[res.resourceName].Add(res);
-				else
-					Resources[res.resourceName] = new List<PartResource> { res };
-	}
 }
