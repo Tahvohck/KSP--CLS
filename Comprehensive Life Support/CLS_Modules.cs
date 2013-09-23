@@ -29,7 +29,6 @@ class CLS_LivableArea : PartModule
 	}
 
 	public override void OnLoad(ConfigNode node) {
-		base.OnLoad(node);
 		CDebug.log(node.ToString());
 	}
 }
