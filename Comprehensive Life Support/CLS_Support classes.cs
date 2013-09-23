@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using UnityEngine;
 
 internal class CLS_Resource
 {
@@ -38,14 +39,20 @@ internal class CLS_Resource
 }
 
 
-class Backend 
+
+/// <summary>
+/// This class handles all backend work that multiple different sources should be able to access 
+/// (or at least shouldn't have to track themselves).
+/// </summary>
+class Backend
 {
 	internal static Dictionary<string, List<PartResource>> Resources;
 	internal static Dictionary<string, double> ResourceMaximums;
 	internal static Dictionary<string, int> ETTLs;
 
+
 	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
-	/// This same walk also determines the maximum stored amount of the resource.
+	/// This walk also determines the maximum stored amount of the resource.
 	/// </summary>
 	internal static void buildResourceTankLists(Vessel ves) {
 		ResourceMaximums = new Dictionary<string, double>();
@@ -64,11 +71,22 @@ class Backend
 	}
 
 
+	/// <summary>Get the current amount of 'resName' on the ship.
+	/// </summary>
+	/// <param name="resName"></param>
+	/// <returns></returns>
 	internal static double getCurrentAmount(string resName) {
 		double amount = 0;
 		foreach (PartResource res in Resources[resName])
 			amount += res.amount;
 		return amount;
+	}
+
+
+	/// <summary>Register a resource production/consumption rate
+	/// </summary>
+	internal static void registerRate(string partID, string resName, double rate){
+		CDebug.log("registerRate not implemented!");
 	}
 }
 
