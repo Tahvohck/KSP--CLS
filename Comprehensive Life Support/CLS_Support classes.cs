@@ -41,18 +41,34 @@ internal class CLS_Resource
 class Backend 
 {
 	internal static Dictionary<string, List<PartResource>> Resources;
-	internal static Dictionary<string, int> ResourceMaximums;
+	internal static Dictionary<string, double> ResourceMaximums;
+	internal static Dictionary<string, int> ETTLs;
 
 	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
+	/// This same walk also determines the maximum stored amount of the resource.
 	/// </summary>
 	internal static void buildResourceTankLists(Vessel ves) {
-		ResourceMaximums = new Dictionary<string,int>();
+		ResourceMaximums = new Dictionary<string, double>();
+		Resources = new Dictionary<string, List<PartResource>>();
+
 		foreach (Part p in ves.Parts)
 			foreach (PartResource res in p.Resources)
-				if (Resources.ContainsKey(res.resourceName))
+				if (Resources.ContainsKey(res.resourceName)) {
 					Resources[res.resourceName].Add(res);
-				else
+					ResourceMaximums[res.resourceName] += res.maxAmount;
+				}
+				else {
 					Resources[res.resourceName] = new List<PartResource> { res };
+					ResourceMaximums[res.resourceName] = res.maxAmount;
+				}
+	}
+
+
+	internal static double getCurrentAmount(string resName) {
+		double amount = 0;
+		foreach (PartResource res in Resources[resName])
+			amount += res.amount;
+		return amount;
 	}
 }
 

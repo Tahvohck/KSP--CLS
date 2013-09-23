@@ -19,9 +19,7 @@ class CLS_FlightGui : MonoBehaviour{
 	private static bool VisibleSettingsWindow = false;
 	private static bool HideUI = false;
 
-	private static bool flightReady = false;
 	private static Vessel ControlledVessel;
-	private static List<Vessel> EVAKerbals;
 	//private static List<PartResource>
 	//	connectedOxygen = new List<PartResource>(),
 	//	connectedCO2 = new List<PartResource>(),
