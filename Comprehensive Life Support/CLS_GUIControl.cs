@@ -74,6 +74,7 @@ class CLS_FlightGui : MonoBehaviour{
 
 
 	//Grouped because inverse.
+	//probably offload these to either the backend or the parts themselves.
 	private void HOOK_EVA_Start(GameEvents.FromToAction<Part, Part> FtA) { }
 	private void HOOK_EVA_End(GameEvents.FromToAction<Part, Part> FtA) { }
 
@@ -116,12 +117,20 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <param name="id"></param>
 	private void drawStatusWindow(int id) {
 		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "")) { VisibleStatusWindow = false; }
-		statusToolbarSelection = GUI.Toolbar(new Rect(5, 20, StatusPanelBox.width - 10, 15),statusToolbarSelection, statusToolbarButtons);
+		//Toolbar. (Left side, probably)
 
-		GUILayout.Label("Test. {" + GUI.skin.label.fontSize + "}");
-		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-		GUILayout.Label(ControlledVessel.vesselName);
-		GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+		//Vessel name, centered
+		GUILayout.Label(ControlledVessel.GetName())/*, Special centered text style*/;
+		//Crew present/capacity
+		GUILayout.Label(ControlledVessel.GetCrewCount() + "/" + ControlledVessel.GetCrewCapacity() + " Kerbals");
+
+		//ETTLs
+		GUILayout.Label("ETTL display not implemented yet.");
+		//Resources left/max
+		GUILayout.Label("Res count not implemented yet.");
+
+		//Stable/Warning for most urgent ETTL
+		GUILayout.Label("\nETTL Warning not implemented.");
 
 		GUI.DragWindow();
 	}
