@@ -71,10 +71,17 @@ class Backend
 	}
 
 
-	/// <summary>Get the current amount of 'resName' on the ship.
+	/// <summary> Default the ETTLs. This may become obsolete.
 	/// </summary>
-	/// <param name="resName"></param>
-	/// <returns></returns>
+	internal static void InitETTLs() {
+		ETTLs = new Dictionary<string,int>();
+		foreach (string s in CLS_Configuration.CLSResourceNames)
+			ETTLs[s] = 0;
+	}
+
+
+	/// <summary>Get the current amount of 'resName' on the ship.
+	/// </summary><param name="resName"></param>
 	internal static double getCurrentAmount(string resName) {
 		double amount = 0;
 		foreach (PartResource res in Resources[resName])
@@ -88,9 +95,27 @@ class Backend
 	internal static void registerRate(string partID, string resName, double rate){
 		CDebug.log("registerRate not implemented!");
 	}
+
+
+	/// <summary>For initialization, non-flight-locked.
+	/// </summary>
+	internal static void Initialize() { }
+
+	/// <summary>For initialization, flight-locked. 
+	/// </summary>
+	internal static void InitializeFlight(Vessel ves) {
+		buildResourceTankLists(ves);
+		InitETTLs();
+	}
 }
 
 
+
+/// <summary>
+/// Debugging class. Generally Pre-compile-locked methods, designed to allow for easy debugging without having
+/// to remove code later to reduce filesize and execution speed.
+/// 
+/// </summary>
 class CDebug
 {
 #if DEBUG
