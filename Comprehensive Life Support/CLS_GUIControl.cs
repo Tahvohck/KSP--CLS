@@ -14,7 +14,7 @@ class CLS_FlightGui : MonoBehaviour{
 	private static Rect StatusPanelBox = new Rect(145, 0, 300, 400);
 	private static Rect SettingsBox = new Rect(145, 0, 300, 400);
 	[KSPField(isPersistant = true)]
-	private static bool VisibleStatusWindow = true;
+	private static bool VisibleStatusWindow = false;
 	[KSPField(isPersistant = true)]
 	private static bool VisibleSettingsWindow = false;
 	private static bool HideUI = false;
@@ -51,8 +51,6 @@ class CLS_FlightGui : MonoBehaviour{
 	/// </summary>
 	private void Start() {
 		CDebug.verbose("CLS GUI Starting.");
-		ControlledVessel = FlightGlobals.ActiveVessel;
-		Backend.buildResourceTankLists(ControlledVessel);
 	}
 	#endregion
 
@@ -87,7 +85,7 @@ class CLS_FlightGui : MonoBehaviour{
 	private void HOOK_FlightReady() {
 		CDebug.verbose("Flight ready Event.");
 		ControlledVessel = FlightGlobals.ActiveVessel;
-		//buildResourceTankLists();
+		Backend.InitializeFlight(ControlledVessel);
 		CDebug.log("Flight ready Event finished.");
 	}
 	#endregion
@@ -119,20 +117,40 @@ class CLS_FlightGui : MonoBehaviour{
 		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "")) { VisibleStatusWindow = false; }
 		//Toolbar. (Left side, probably)
 
+		StatusOverview();
+
+		GUI.DragWindow();
+	}
+
+
+	//private static GUIStyle centeredText = new GUIStyle(GUI.skin.label) {
+	//	alignment = TextAnchor.MiddleCenter
+	//};
+	/// <summary>Display function for the Overview tab of the status window 
+	/// </summary>
+	private void StatusOverview() {
 		//Vessel name, centered
-		GUILayout.Label(ControlledVessel.GetName())/*, Special centered text style*/;
+		GUILayout.Label(ControlledVessel.GetName());//, centeredText);
 		//Crew present/capacity
 		GUILayout.Label(ControlledVessel.GetCrewCount() + "/" + ControlledVessel.GetCrewCapacity() + " Kerbals");
 
-		//ETTLs
-		GUILayout.Label("ETTL display not implemented yet.");
-		//Resources left/max
-		GUILayout.Label("Res count not implemented yet.");
+		//ETTLs, Resources left/max
+		//GUILayout.Label("ETTL display not implemented yet.");
+		//GUILayout.Label("Res count not implemented yet.");
+		foreach (string resName in CLS_Configuration.CLSResourceNames) {
+			GUILayout.BeginHorizontal();
+			GUILayout.Label(String.Format("{0, -10}", resName + ":"));
+			GUILayout.Label(String.Format("\t{0, 10}", Backend.ETTLs[resName]));
+			GUILayout.Label(String.Format("{0}/{1}",
+				(Backend.ResourceMaximums[resName] == 0) ? "--" : "-0-",
+				(Backend.ResourceMaximums[resName] == 0) ? "--" : Backend.ResourceMaximums[resName].ToString()));
+			GUILayout.EndHorizontal();
+		}
 
 		//Stable/Warning for most urgent ETTL
 		GUILayout.Label("\nETTL Warning not implemented.");
-
-		GUI.DragWindow();
+		//Subsystem damage status
+		GUILayout.Label("Damage status not implemented.");
 	}
 
 
