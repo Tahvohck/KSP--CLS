@@ -11,10 +11,12 @@ using UnityEngine;
 [KSPAddon(KSPAddon.Startup.Flight, false)]
 class CLS_FlightGui : MonoBehaviour{
 	#region CLASS VARIABLES
+	private static Rect StatusPanelBox = new Rect(145, 0, 300, 400);
+	private static Rect SettingsBox = new Rect(145, 0, 300, 400);
 	[KSPField(isPersistant = true)]
-	private static bool doShowStatusWindow = false;
+	private static bool VisibleStatusWindow = false;
 	[KSPField(isPersistant = true)]
-	private static bool doShowSettingsWindow = false;
+	private static bool VisibleSettingsWindow = false;
 	private static bool HideUI = false;
 
 	private static Vessel ControlledVessel;
@@ -59,7 +61,7 @@ class CLS_FlightGui : MonoBehaviour{
 		//Manual show/hide for the Status panel. Only 'P' is listening for keydown, 
 		//otherwise user would have to press both keys during the same frame.
 		if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.P)) {
-			doShowStatusWindow = !doShowStatusWindow;
+			VisibleStatusWindow = !VisibleStatusWindow;
 			CDebug.log("Ctrl + P chord pressed.");
 		}
 	}
@@ -90,79 +92,45 @@ class CLS_FlightGui : MonoBehaviour{
 
 
 	#region GUI CONTROLS
-	private static Rect StatusPanelBox = new Rect(150, 0, 350, 250);
-	private static Rect SettingsBox = new Rect(145, 0, 400, 300);
-	private static int statusToolbarSelection = 0;
-	private static GUIStyle centeredText;
-	private static string[] statusToolbarButtons = { "Overview", "Subsys", "Damage", "EVAs" };
 	/// <summary>
 	/// 
 	/// </summary>
 	private void OnGUI() {
-		if (centeredText == null)	//using this because it was the first GUI variable I made. 
-			InitGUIVariables();		//If it's null this is the GUI's first run.
-		else {
-			if (!HideUI && doShowStatusWindow)
+		//try {
+			if (!HideUI && VisibleStatusWindow)
 				StatusPanelBox = GUI.Window("CLSStatus".GetHashCode(), StatusPanelBox, drawStatusWindow, "ClearScreen Life Support");
-			if (!HideUI && doShowSettingsWindow)
+			if (!HideUI && VisibleSettingsWindow)
 				SettingsBox = GUI.Window("CLSSettings".GetHashCode(), SettingsBox, drawSettingsWindow, "CLS Settings");
-		}
+		//}
+		//catch (NullReferenceException nullE) {
+		//	CDebug.log(nullE.Message + "\n" + nullE.StackTrace);
+		//}
 	}
 
 
-	/// <summary>Init for GUI-based variables
-	/// </summary>
-	private void InitGUIVariables() {
-		centeredText = new GUIStyle(GUI.skin.label){
-			alignment = TextAnchor.MiddleCenter,
-			font = new Font(){
-				name = "Arial"
-			}
-		};
-	}
-
-
+	private int statusToolbarSelection = 0;
+	private string[] statusToolbarButtons = {"Overview", "Generators", "EVAs" };
 	/// <summary>Draw the Status Panel window.
 	/// </summary>
 	/// <param name="id"></param>
 	private void drawStatusWindow(int id) {
-		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "X")) { doShowStatusWindow = false; }
+		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "")) { VisibleStatusWindow = false; }
 		//Toolbar. (Left side, probably)
-		GUILayout.BeginHorizontal();
-		statusToolbarSelection =  GUILayout.SelectionGrid(statusToolbarSelection, statusToolbarButtons, 1, GUILayout.Width(75));
-		GUILayout.Space(10);
-		GUILayout.BeginVertical();
 
-		switch (statusToolbarSelection) {
-			case 0:
-				StatusOverview();
-				break;
-			case 1:
-				Subsystems();
-				break;
-			case 2:
-				BrokenParts();
-				break;
-			case 3:
-			default:
-				GUILayout.Label("Either something went wrong, or the tab is not implemented.");
-				break;
-		}
+		StatusOverview();
 
-		GUILayout.EndVertical();
-		GUILayout.EndHorizontal();
-
-		if (GUI.Button(new Rect(10, StatusPanelBox.height - 25, 75, 20), "Settings"))
-			doShowSettingsWindow = true;
 		GUI.DragWindow();
 	}
 
-	 
+
+	//private static GUIStyle centeredText = new GUIStyle(GUI.skin.label) {
+	//	alignment = TextAnchor.MiddleCenter
+	//};
 	/// <summary>Display function for the Overview tab of the status window 
 	/// </summary>
 	private void StatusOverview() {
 		//Vessel name, centered
-		GUILayout.Label(ControlledVessel.GetName(), centeredText);
+		GUILayout.Label(ControlledVessel.GetName());//, centeredText);
 		//Crew present/capacity
 		GUILayout.Label(ControlledVessel.GetCrewCount() + "/" + ControlledVessel.GetCrewCapacity() + " Kerbals");
 
@@ -171,9 +139,8 @@ class CLS_FlightGui : MonoBehaviour{
 		//GUILayout.Label("Res count not implemented yet.");
 		foreach (string resName in CLS_Configuration.CLSResourceNames) {
 			GUILayout.BeginHorizontal();
-			GUILayout.Label(String.Format("{0, -10}", resName + ":"),GUILayout.Width(50));
-			GUILayout.Label(String.Format("\t{0, 15}",
-				(Backend.ETTLs[resName] == 0) ? "--:--:--:--" : Backend.ETTLs[resName].ToString()));
+			GUILayout.Label(String.Format("{0, -10}", resName + ":"));
+			GUILayout.Label(String.Format("\t{0, 10}", Backend.ETTLs[resName]));
 			GUILayout.Label(String.Format("{0}/{1}",
 				(Backend.ResourceMaximums[resName] == 0) ? "--" : "-0-",
 				(Backend.ResourceMaximums[resName] == 0) ? "--" : Backend.ResourceMaximums[resName].ToString()));
@@ -187,51 +154,21 @@ class CLS_FlightGui : MonoBehaviour{
 	}
 
 
-	/// <summary>Display function for the Subsystems tab.
-	/// </summary>
-	private void Subsystems() {
-	}
-
-
-	/// <summary>Display function for the broken parts tab.
-	/// </summary>
-	private void BrokenParts() {
-		if (Backend.BrokenParts.Count == 0)
-			GUILayout.Label("No broken parts! Awesome!");
-		else
-			foreach (Part p in Backend.BrokenParts) {
-				GUILayout.Label(p.name);
-			}
-	}
-
-
-	private void drawSettingsWindow(int id) {
-		if (GUI.Button(new Rect(SettingsBox.width - 15, 5, 10, 10), "X")) { doShowSettingsWindow = false; }
-		foreach (string resName in CLS_Configuration.CLSResourceNames) {
-			GUILayout.BeginHorizontal();
-			GUILayout.Label(resName + " warning level:", GUILayout.Width(70));
-			GUILayout.EndHorizontal();
-		}
-		CLS_Configuration.partsBreak = GUILayout.Toggle(CLS_Configuration.partsBreak, "Parts can break");
-		GUILayout.BeginHorizontal();
-		GUILayout.Label("[Overall timescale edit]");
-		GUILayout.EndHorizontal();
-
-		GUI.DragWindow();
-	}
+	private void drawSettingsWindow(int id) { }
 
 
 	/// <summary> 
 	/// </summary>
 	internal static void showStatusWindow() {
 		CDebug.verbose("Showing status window.");
-		doShowStatusWindow = true;
+		VisibleStatusWindow = true;
 	}
+
 
 	/// <summary>
 	/// </summary>
 	internal static void hideStatusWindow() {
-		doShowStatusWindow = false;
+		VisibleStatusWindow = false;
 		CDebug.verbose("Hiding status window.");
 	}
 	#endregion
