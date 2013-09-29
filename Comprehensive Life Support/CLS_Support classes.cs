@@ -50,6 +50,7 @@ class Backend
 	internal static Dictionary<string, double> ResourceMaximums;
 	internal static Dictionary<string, int> ETTLs;
 
+	internal static List<Part> BrokenParts = new List<Part>();
 
 	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
 	/// This walk also determines the maximum stored amount of the resource.
