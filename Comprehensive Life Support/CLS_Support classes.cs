@@ -6,35 +6,25 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-internal class CLS_Resource
+internal class BrokenPart
 {
-	public string name = "";
-	public double ratePerKerbal = 0.0,
-		amountOnEVA = 0.0,
-		maxOnEVA = 0.0;
-	public bool takenOnEVA = false;
+	readonly int id;
+	readonly BreakType problem;
 
-	public CLS_Resource(string name, double rate) {
-		this.name = name;
-		this.ratePerKerbal = rate;
+
+	BrokenPart(int partHash, BreakType problem, float initialSeverity = -1, float severityMultiplier = 1.01f) {
+		id = partHash;
+		this.problem = problem;
 	}
 
-	/// <summary>Constructor for an EVA resource. Note that if onEVA is false or amountOnEVA or maxOnEVA are null
-	/// this defaults to acting exactly as the default (name, rate) constructor.
+
+	/// <summary>Enumerator for types of breaks.
 	/// </summary>
-	/// <param name="name"></param><param name="rate"></param><param name="onEVA"></param>
-	/// <param name="amountOnEVA"></param><param name="maxOnEVA"></param>
-	public CLS_Resource(string name, double rate, bool onEVA, double amountOnEVA, double maxOnEVA) {
-		this.name = name;
-		this.ratePerKerbal = rate;
-		if (onEVA || amountOnEVA != 0.0 || maxOnEVA != 0.0) {
-			takenOnEVA = onEVA;
-			if (amountOnEVA < maxOnEVA)
-				this.amountOnEVA = amountOnEVA;
-			else
-				this.amountOnEVA = maxOnEVA;
-			this.maxOnEVA = maxOnEVA;
-		}
+	public enum BreakType : byte {
+		LeakOxygen,
+		LeakCO2,
+		LeakWater,
+		ElectronicsFailure
 	}
 }
 
@@ -50,7 +40,7 @@ class Backend
 	internal static Dictionary<string, double> ResourceMaximums;
 	internal static Dictionary<string, int> ETTLs;
 
-	internal static List<Part> BrokenParts = new List<Part>();
+	internal static List<BrokenPart> BrokenParts = new List<BrokenPart>();
 
 	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
 	/// This walk also determines the maximum stored amount of the resource.
