@@ -31,4 +31,35 @@ class CLS_LivableArea : PartModule
 	public override void OnLoad(ConfigNode node) {
 		CDebug.log(node.ToString());
 	}
+
+
+	public void FixedUpdate() {
+		CDebug.log(part.GetHashCode().ToString());
+		int secondsPerDayFactor = 86400;
+		double o2Got, co2Made, snacksGot, waterGot;
+		float dTime = TimeWarp.fixedDeltaTime;
+		byte crewSize = (byte)part.protoModuleCrew.Count;
+		
+		//get oxygen
+		double wantedO2 = crewSize * dTime * CLS_Configuration.ratesPerKerbal["Oxygen"] / 
+			(secondsPerDayFactor / CLS_Configuration.timeScale);
+		o2Got = part.RequestResource("Oxygen", wantedO2);
+		if (o2Got == 0) { //if this returned 0 it means there wasn't the amount we wanted.
+			double amountLeft = Backend.getCurrentAmount("Oxygen");
+			if (amountLeft != 0)	//As long as we have anything left in the system
+				o2Got = part.RequestResource("Oxygen", amountLeft);
+			else { }	//start killing Kerbals
+		}
+		//add CO2
+		co2Made = part.RequestResource("CO2", crewSize * dTime * CLS_Configuration.ratesPerKerbal["CO2"] * (o2Got / wantedO2) /
+			(secondsPerDayFactor / CLS_Configuration.timeScale));
+		//(o2Got / wantedO2) is to ensure that we only produce an equivalent amount of CO2 to the O2 we consumed.
+
+		//get food
+		snacksGot = part.RequestResource("Snacks", crewSize * dTime * CLS_Configuration.ratesPerKerbal["Snacks"] /
+			(secondsPerDayFactor / CLS_Configuration.timeScale));
+		//get water
+		waterGot = part.RequestResource("Water", crewSize * dTime * CLS_Configuration.ratesPerKerbal["Water"] /
+			(secondsPerDayFactor / CLS_Configuration.timeScale));
+	}
 }
