@@ -17,8 +17,8 @@ class CLS_Configuration : MonoBehaviour
 	internal static Dictionary<string, double> ratesPerKerbal = new Dictionary<string,double>();
 	internal static List<ConfigNode> CLSResources = new List<ConfigNode>();	//For dynamically adding resources to parts.
 	internal static List<string> CLSResourceNames = new List<string>();		//For checking CLS-based resources.
-	internal static bool partsBreak;
-	internal static float timeScale;
+	internal static bool partsBreak = false;
+	internal static float timeScale = 4;
 	#endregion
 	#region PRIVATE MEMBERS
 	private static string APPDIR = KSPUtil.ApplicationRootPath;
@@ -32,7 +32,10 @@ Oxygen	= 144
 CO2		= -144
 Water	= 8
 Snacks	= 3
-[/RPK]";
+[/RPK]
+
+timeScale = 4
+partsBreak = false";
 	#endregion
 	private static string configFilePath;
 	private static string defaultResourceFile =
