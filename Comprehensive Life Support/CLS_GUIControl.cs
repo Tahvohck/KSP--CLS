@@ -18,13 +18,6 @@ class CLS_FlightGui : MonoBehaviour{
 	private static bool HideUI = false;
 
 	private static Vessel ControlledVessel;
-	//private static List<PartResource>
-	//	connectedOxygen = new List<PartResource>(),
-	//	connectedCO2 = new List<PartResource>(),
-	//	connectedSnacks = new List<PartResource>(),
-	//	connectedWater = new List<PartResource>();
-
-	//This is used in place of the above lists.
 	#endregion
 
 
@@ -65,30 +58,6 @@ class CLS_FlightGui : MonoBehaviour{
 	}
 
 
-	#region HOOKS
-	private void HOOK_VesselChange(Vessel v) { }
-
-
-	//Grouped because inverse.
-	//probably offload these to either the backend or the parts themselves.
-	private void HOOK_EVA_Start(GameEvents.FromToAction<Part, Part> FtA) { }
-	private void HOOK_EVA_End(GameEvents.FromToAction<Part, Part> FtA) { }
-
-
-	//Grouped because inverse.
-	private void HOOK_HideUI() { HideUI = true; }
-	private void HOOK_ShowUI() { HideUI = false; }
-
-
-	private void HOOK_FlightReady() {
-		CDebug.verbose("Flight ready Event.");
-		ControlledVessel = FlightGlobals.ActiveVessel;
-		Backend.InitializeFlight(ControlledVessel);
-		CDebug.log("Flight ready Event finished.");
-	}
-	#endregion
-
-
 	#region GUI CONTROLS
 	private static Rect StatusPanelBox = new Rect(150, 0, 350, 250);
 	private static Rect SettingsBox = new Rect(145, 0, 400, 300);
@@ -99,6 +68,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// 
 	/// </summary>
 	private void OnGUI() {
+		CDebug.log("GUI point 1");
 		if (centeredText == null)	//using this because it was the first GUI variable I made. 
 			InitGUIVariables();		//If it's null this is the GUI's first run.
 		else {
@@ -113,11 +83,9 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Init for GUI-based variables
 	/// </summary>
 	private void InitGUIVariables() {
+		CDebug.log("GUI point 2.1");
 		centeredText = new GUIStyle(GUI.skin.label){
-			alignment = TextAnchor.MiddleCenter,
-			font = new Font(){
-				name = "Arial"
-			}
+			alignment = TextAnchor.MiddleCenter
 		};
 	}
 
@@ -126,6 +94,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// </summary>
 	/// <param name="id"></param>
 	private void drawStatusWindow(int id) {
+		CDebug.log("GUI point 2.2");
 		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "X")) { doShowStatusWindow = false; }
 		//Toolbar. (Left side, probably)
 		GUILayout.BeginHorizontal();
@@ -161,6 +130,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Display function for the Overview tab of the status window 
 	/// </summary>
 	private void StatusOverview() {
+		CDebug.log("GUI point 2.2.1");
 		//Vessel name, centered
 		GUILayout.Label(ControlledVessel.GetName(), centeredText);
 		//Crew present/capacity
@@ -190,12 +160,14 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Display function for the Subsystems tab.
 	/// </summary>
 	private void Subsystems() {
+		CDebug.log("GUI point 2.2.2");
 	}
 
 
 	/// <summary>Display function for the broken parts tab.
 	/// </summary>
 	private void BrokenParts() {
+		CDebug.log("GUI point 2.2.3");
 		if (Backend.BrokenParts.Count == 0)
 			GUILayout.Label("No broken parts! Awesome!");
 		else
@@ -206,6 +178,7 @@ class CLS_FlightGui : MonoBehaviour{
 
 
 	private void drawSettingsWindow(int id) {
+		CDebug.log("GUI point 2.3");
 		if (GUI.Button(new Rect(SettingsBox.width - 15, 5, 10, 10), "X")) { doShowSettingsWindow = false; }
 		foreach (string resName in CLS_Configuration.CLSResourceNames) {
 			GUILayout.BeginHorizontal();
@@ -233,6 +206,30 @@ class CLS_FlightGui : MonoBehaviour{
 	internal static void hideStatusWindow() {
 		doShowStatusWindow = false;
 		CDebug.verbose("Hiding status window.");
+	}
+	#endregion
+
+
+	#region HOOKS
+	private void HOOK_VesselChange(Vessel v) { }
+
+
+	//Grouped because inverse.
+	//probably offload these to either the backend or the parts themselves.
+	private void HOOK_EVA_Start(GameEvents.FromToAction<Part, Part> FtA) { }
+	private void HOOK_EVA_End(GameEvents.FromToAction<Part, Part> FtA) { }
+
+
+	//Grouped because inverse.
+	private void HOOK_HideUI() { HideUI = true; }
+	private void HOOK_ShowUI() { HideUI = false; }
+
+
+	private void HOOK_FlightReady() {
+		CDebug.verbose("Flight ready Event.");
+		ControlledVessel = FlightGlobals.ActiveVessel;
+		Backend.InitializeFlight(ControlledVessel);
+		CDebug.log("Flight ready Event finished.");
 	}
 	#endregion
 }
