@@ -57,7 +57,6 @@
     <Compile Include="CLS_Modules.cs" />
     <Compile Include="CLS_Support classes.cs" />
     <Compile Include="CLS_GUIControl.cs" />
-    <Compile Include="CLS_Configuration.cs" />
     <None Include="OLD_CLS_GUIControl.cs">
       <SubType>Code</SubType>
     </None>
