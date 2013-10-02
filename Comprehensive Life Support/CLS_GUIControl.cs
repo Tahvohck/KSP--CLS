@@ -68,7 +68,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// 
 	/// </summary>
 	private void OnGUI() {
-		CDebug.log("GUI point 1");
+		//CDebug.log("GUI point 1");
 		if (centeredText == null)	//using this because it was the first GUI variable I made. 
 			InitGUIVariables();		//If it's null this is the GUI's first run.
 		else {
@@ -83,7 +83,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Init for GUI-based variables
 	/// </summary>
 	private void InitGUIVariables() {
-		CDebug.log("GUI point 2.1");
+		//CDebug.log("GUI point 2.1");
 		centeredText = new GUIStyle(GUI.skin.label){
 			alignment = TextAnchor.MiddleCenter
 		};
@@ -94,7 +94,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// </summary>
 	/// <param name="id"></param>
 	private void drawStatusWindow(int id) {
-		CDebug.log("GUI point 2.2");
+		//CDebug.log("GUI point 2.2");
 		if (GUI.Button(new Rect(StatusPanelBox.width - 15, 5, 10, 10), "X")) { doShowStatusWindow = false; }
 		//Toolbar. (Left side, probably)
 		GUILayout.BeginHorizontal();
@@ -106,12 +106,13 @@ class CLS_FlightGui : MonoBehaviour{
 			case 0:
 				StatusOverview();
 				break;
-			case 1:
-				Subsystems();
-				break;
+			//case 1:
+			//	Subsystems();
+			//	break;
 			case 2:
 				BrokenParts();
 				break;
+			case 1:
 			case 3:
 			default:
 				GUILayout.Label("Either something went wrong, or the tab is not implemented.");
@@ -130,7 +131,7 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Display function for the Overview tab of the status window 
 	/// </summary>
 	private void StatusOverview() {
-		CDebug.log("GUI point 2.2.1");
+		//CDebug.log("GUI point 2.2.1");
 		//Vessel name, centered
 		GUILayout.Label(ControlledVessel.GetName(), centeredText);
 		//Crew present/capacity
@@ -160,18 +161,18 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Display function for the Subsystems tab.
 	/// </summary>
 	private void Subsystems() {
-		CDebug.log("GUI point 2.2.2");
+		//CDebug.log("GUI point 2.2.2");
 	}
 
 
 	/// <summary>Display function for the broken parts tab.
 	/// </summary>
 	private void BrokenParts() {
-		CDebug.log("GUI point 2.2.3");
+		//CDebug.log("GUI point 2.2.3");
 		if (Backend.BrokenParts.Count == 0)
 			GUILayout.Label("No broken parts! Awesome!");
 		else
-			foreach (Part p in Backend.BrokenParts) {
+			foreach (BrokenPart p in Backend.BrokenParts) {
 				GUILayout.Label(p.name);
 			}
 	}
