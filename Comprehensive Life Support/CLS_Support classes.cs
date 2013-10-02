@@ -9,22 +9,37 @@ using UnityEngine;
 internal class BrokenPart
 {
 	readonly int id;
-	readonly BreakType problem;
+	private BreakType problem;
+	private float severity, sevMult;
 
 
-	BrokenPart(int partHash, BreakType problem, float initialSeverity = -1, float severityMultiplier = 1.01f) {
+
+	/// <param name="partHash">Hash of the part that owns this break</param>
+	/// <param name="problem">The type of problem</param>
+	/// <param name="initialSeverity">The rate at which it causes a resource to be lost, if any.</param>
+	/// <param name="severityMultiplier"></param>
+	internal BrokenPart(int partHash, BreakType problem, float initialSeverity = -1, float severityMultiplier = 1.01f) {
 		id = partHash;
 		this.problem = problem;
+		severity = initialSeverity;
+		sevMult = severityMultiplier;
 	}
+
+
+	internal float Severity() {return severity;}
+
+	internal BreakType Problems() { return problem; }
 
 
 	/// <summary>Enumerator for types of breaks.
 	/// </summary>
+	[Flags]
 	public enum BreakType : byte {
-		LeakOxygen,
-		LeakCO2,
-		LeakWater,
-		ElectronicsFailure
+		LeakOxygen = 0x01,
+		LeakCO2 = 0x02,
+		LeakWater = 0x04,
+		ElectronicsFailure = 0x08,
+		BadFilter = 0x10
 	}
 }
 
