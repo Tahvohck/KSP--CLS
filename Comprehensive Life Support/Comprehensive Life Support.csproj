@@ -63,6 +63,7 @@
     <None Include="OLD_CLS_Modules.cs">
       <SubType>Code</SubType>
     </None>
+    <Compile Include="ConfigSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
