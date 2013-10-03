@@ -138,7 +138,7 @@ class CLS_FlightGui : MonoBehaviour{
 		//ETTLs, Resources left/max
 		//GUILayout.Label("ETTL display not implemented yet.");
 		//GUILayout.Label("Res count not implemented yet.");
-		foreach (string resName in Backend.CLS_Configuration.CLSResourceNames) {
+		foreach (string resName in Backend.ConfigSettings.CLSResourceNames) {
 			GUILayout.BeginHorizontal();
 			GUILayout.Label(String.Format("{0, -10}", resName + ":"),GUILayout.Width(50));
 			GUILayout.Label(String.Format("\t{0, 15}",
@@ -179,12 +179,12 @@ class CLS_FlightGui : MonoBehaviour{
 	private void drawSettingsWindow(int id) {
 		CDebug.log("GUI point 2.3");
 		if (GUI.Button(new Rect(SettingsBox.width - 15, 5, 10, 10), "X")) { doShowSettingsWindow = false; }
-		foreach (string resName in Backend.CLS_Configuration.CLSResourceNames) {
+		foreach (string resName in Backend.ConfigSettings.CLSResourceNames) {
 			GUILayout.BeginHorizontal();
 			GUILayout.Label(resName + " warning level:", GUILayout.Width(70));
 			GUILayout.EndHorizontal();
 		}
-		Backend.CLS_Configuration.partsBreak = GUILayout.Toggle(Backend.CLS_Configuration.partsBreak, "Parts can break");
+		Backend.ConfigSettings.partsBreak = GUILayout.Toggle(Backend.ConfigSettings.partsBreak, "Parts can break");
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("[Overall timescale edit]");
 		GUILayout.EndHorizontal();

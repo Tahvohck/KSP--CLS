@@ -82,7 +82,7 @@ class Backend
 	/// </summary>
 	internal static void InitETTLs() {
 		ETTLs = new Dictionary<string,int>();
-		foreach (string s in CLS_Configuration.CLSResourceNames)
+		foreach (string s in ConfigSettings.CLSResourceNames)
 			ETTLs[s] = 0;
 	}
 
@@ -116,8 +116,14 @@ class Backend
 	}
 
 
+
+	/// <summary>
+	/// Internal class for loading configuration settings from the CLS config file. 
+	/// Also contains members for saving changed settings back to file.
+	/// Also contains a list of all CLS resources.
+	/// </summary>
 	[KSPAddon(KSPAddon.Startup.MainMenu, false)]
-	internal class CLS_Configuration : MonoBehaviour
+	internal class ConfigSettings : MonoBehaviour
 	{
 		#region ACCESSIBLE MEMBERS
 		internal static Dictionary<string, double> ratesPerKerbal = new Dictionary<string, double>();
