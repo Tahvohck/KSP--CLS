@@ -8,6 +8,12 @@ using UnityEngine;
 
 class CLS_LivableArea : PartModule
 {
+	private readonly static BrokenPart.BreakType possibleBreaks =
+		BrokenPart.BreakType.BadFilter	|
+		BrokenPart.BreakType.LeakOxygen	|
+		BrokenPart.BreakType.LeakWater;
+	private BrokenPart.BreakType currentlyBroken = new BrokenPart.BreakType();
+	
 	//[KSPEvent(active=true, guiActive=true,guiName="Hide CLS")]
 	//private void hideGUI() {
 	//	Events["showGUI"].active = true;
@@ -20,6 +26,11 @@ class CLS_LivableArea : PartModule
 	//	Events["hideGUI"].active = true;
 	//	CLS_FlightGui.showStatusWindow();
 	//}
+	[KSPEvent(active = false, guiActive = true, guiName = "Do repairs")]
+	private void Repair() { }
+	[KSPEvent(active = false, guiActive = true, guiName = "EVA repairs", externalToEVAOnly=true)]
+	private void EVARepair() { Repair(); }
+
 
 	private static void Awake() {
 		CDebug.log("LivableArea Awoken.");
