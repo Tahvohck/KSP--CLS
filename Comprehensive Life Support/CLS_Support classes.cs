@@ -10,17 +10,18 @@ using UnityEngine;
 internal class BrokenPart
 {
 	readonly int id;
+	readonly string partName;
 	private BreakType problem;
 	private float severity, sevMult;
-
 
 
 	/// <param name="partHash">Hash of the part that owns this break</param>
 	/// <param name="problem">The type of problem</param>
 	/// <param name="initialSeverity">The rate at which it causes a resource to be lost, if any.</param>
 	/// <param name="severityMultiplier"></param>
-	internal BrokenPart(int partHash, BreakType problem, float initialSeverity = -1, float severityMultiplier = 1.01f) {
-		id = partHash;
+	internal BrokenPart(Part owner, BreakType problem, float initialSeverity = -1, float severityMultiplier = 1.01f) {
+		id = owner.GetHashCode();
+		partName = owner.name;
 		this.problem = problem;
 		severity = initialSeverity;
 		sevMult = severityMultiplier;
