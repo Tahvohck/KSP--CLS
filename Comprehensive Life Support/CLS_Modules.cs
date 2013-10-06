@@ -9,68 +9,89 @@ using UnityEngine;
 class CLS_LivableArea : PartModule
 {
 	private readonly static BrokenPart.BreakType possibleBreaks =
-		BrokenPart.BreakType.BadFilter	|
-		BrokenPart.BreakType.LeakOxygen	|
+		BrokenPart.BreakType.BadFilter |
+		BrokenPart.BreakType.LeakOxygen |
 		BrokenPart.BreakType.LeakWater;
 	private BrokenPart.BreakType currentlyBroken = new BrokenPart.BreakType();
-	
-	//[KSPEvent(active=true, guiActive=true,guiName="Hide CLS")]
-	//private void hideGUI() {
-	//	Events["showGUI"].active = true;
-	//	Events["hideGUI"].active = false;
-	//	CLS_FlightGui.hideStatusWindow();
-	//}
-	//[KSPEvent(active = true, guiActive = true, guiName = "Show CLS")]
-	//private void showGUI() {
-	//	Events["showGUI"].active = false;
-	//	Events["hideGUI"].active = true;
-	//	CLS_FlightGui.showStatusWindow();
-	//}
+
+
 	[KSPEvent(active = false, guiActive = true, guiName = "Do repairs")]
 	private void Repair() { }
-	[KSPEvent(active = false, guiActive = true, guiName = "EVA repairs", externalToEVAOnly=true)]
+	[KSPEvent(active = false, guiActive = true, guiName = "EVA repairs", externalToEVAOnly = true)]
 	private void EVARepair() { Repair(); }
 
 
-	private static void Awake() {
-		CDebug.log("LivableArea Awoken.");
-	}
-	private static void Start() {
-		CDebug.log("LivableArea started.");
+	private static void Awake() { CDebug.log("LivableArea Awoken."); }
+	private static void Start() { CDebug.log("LivableArea started."); }
+
+
+	public override void OnStart(StartState state) {
+		if (HighLogic.LoadedSceneIsFlight)
+			foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
+				if (!Backend.KerbalHealth.ContainsKey(crewMem.name))
+					Backend.KerbalHealth[crewMem.name] = new KerbalBiometric();
 	}
 
-	public override void OnLoad(ConfigNode node) {
-		CDebug.log(node.ToString());
-	}
+
+	public override void OnLoad(ConfigNode node) { CDebug.log(node.ToString()); }
 
 
 	public void FixedUpdate() {
-		CDebug.log(part.GetHashCode().ToString());
 		int secondsPerDayFactor = 86400;
+		double o2Want, snacksWant, waterWant;
 		double o2Got, co2Made, snacksGot, waterGot;
 		float dTime = TimeWarp.fixedDeltaTime;
 		byte crewSize = (byte)part.protoModuleCrew.Count;
-		
+
 		//get oxygen
-		double wantedO2 = crewSize * dTime * ConfigSettings.ratesPerKerbal["Oxygen"] /
+		o2Want = crewSize * dTime * ConfigSettings.ratesPerKerbal["Oxygen"] /
 			(secondsPerDayFactor / ConfigSettings.timeScale);
-		o2Got = part.RequestResource("Oxygen", wantedO2);
+		o2Got = part.RequestResource("Oxygen", o2Want);
 		if (o2Got == 0) { //if this returned 0 it means there wasn't the amount we wanted.
 			double amountLeft = Backend.getCurrentAmount("Oxygen");
-			if (amountLeft != 0)	//As long as we have anything left in the system
-				o2Got = part.RequestResource("Oxygen", amountLeft);
-			else { }	//start killing Kerbals
+			double percentOfWanted = (o2Want - amountLeft)/o2Want;
+			o2Got = part.RequestResource("Oxygen", amountLeft);
+			foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
+				if (Backend.KerbalHealth[crewMem.name].bloodstreamOxygen > 0) {
+					Backend.KerbalHealth[crewMem.name].bloodstreamOxygen -= (dTime * percentOfWanted);
+					CDebug.log(crewMem.name + " has " + Math.Floor(Backend.KerbalHealth[crewMem.name].bloodstreamOxygen) + " seconds to live.");
+				}
+				else {
+					crewMem.Die();
+					crewMem.seat.DespawnCrew();
+				}
 		}
+		else
+			foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
+				Backend.KerbalHealth[crewMem.name].resetOxygen();
+
 		//add CO2
-		co2Made = part.RequestResource("CO2", crewSize * dTime * ConfigSettings.ratesPerKerbal["CO2"] * (o2Got / wantedO2) /
+		co2Made = part.RequestResource("CO2", crewSize * dTime * ConfigSettings.ratesPerKerbal["CO2"] * (o2Got / o2Want) /
 			(secondsPerDayFactor / ConfigSettings.timeScale));
-		//(o2Got / wantedO2) is to ensure that we only produce an equivalent amount of CO2 to the O2 we consumed.
+		//(o2Got / o2Want) is to ensure that we only produce an equivalent amount of CO2 to the O2 we consumed.
 
 		//get food
-		snacksGot = part.RequestResource("Snacks", crewSize * dTime * ConfigSettings.ratesPerKerbal["Snacks"] /
-			(secondsPerDayFactor / ConfigSettings.timeScale));
+		//TODO I want this to eventually be a periodic thing instead of a constant.
+		snacksWant = crewSize * dTime * ConfigSettings.ratesPerKerbal["Snacks"] /
+			(secondsPerDayFactor / ConfigSettings.timeScale);
+		snacksGot = part.RequestResource("Snacks", snacksWant);
+		if (snacksGot == 0) { //if this returned 0 it means there wasn't the amount we wanted.
+			double amountLeft = Backend.getCurrentAmount("Snacks");
+			double percentOfWanted = (snacksWant - amountLeft)/snacksWant;
+			snacksGot = part.RequestResource("Snacks", amountLeft);
+			foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
+				if (Backend.KerbalHealth[crewMem.name].bloodstreamSnacks > 0)
+					Backend.KerbalHealth[crewMem.name].bloodstreamSnacks -= (dTime * percentOfWanted);
+				else
+					crewMem.Die();
+		}
+		else
+			foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
+				Backend.KerbalHealth[crewMem.name].resetSnacks();
+
 		//get water
 		waterGot = part.RequestResource("Water", crewSize * dTime * ConfigSettings.ratesPerKerbal["Water"] /
 			(secondsPerDayFactor / ConfigSettings.timeScale));
+
 	}
 }

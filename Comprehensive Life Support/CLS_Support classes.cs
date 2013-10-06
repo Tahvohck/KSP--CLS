@@ -48,6 +48,22 @@ internal class BrokenPart
 
 
 /// <summary>
+/// Used for keeping track of an inividual kerbal's biometrics.
+/// </summary>
+internal class KerbalBiometric {
+	internal double
+		bloodstreamOxygen = 180,	//Times (in seconds) until death for any of the resources.
+		bloodstreamWater = 64800,	//Using the 3-3-3 rule. Not really accurate, but it's good enough for our purposes.
+		bloodstreamSnacks = 453600;	//After all, if this kicks in you're already in trouble.
+
+	internal void resetOxygen() { bloodstreamOxygen = 180; }
+	internal void resetWater() { bloodstreamWater = 64800; }
+	internal void resetSnacks() { bloodstreamSnacks = 453600; }
+}
+
+
+
+/// <summary>
 /// This class handles all backend work that multiple different sources should be able to access 
 /// (or at least shouldn't have to track themselves).
 /// </summary>
@@ -56,6 +72,7 @@ class Backend
 	internal static Dictionary<string, List<PartResource>> Resources;
 	internal static Dictionary<string, double> ResourceMaximums;
 	internal static Dictionary<string, int> ETTLs;
+	internal static Dictionary<string, KerbalBiometric> KerbalHealth = new Dictionary<string,KerbalBiometric>();
 
 	internal static List<BrokenPart> BrokenParts = new List<BrokenPart>();
 
