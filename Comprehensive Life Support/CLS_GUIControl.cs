@@ -61,7 +61,11 @@ class CLS_FlightGui : MonoBehaviour{
 	private static Rect SettingsBox = new Rect(145, 0, 400, 300);
 	private static int statusToolbarSelection = 0;
 	private static GUIStyle centeredText;
+#if (DEBUG == false)
 	private static string[] statusToolbarButtons = { "Overview", "Subsys", "Damage", "EVAs" };
+#else
+	private static string[] statusToolbarButtons = { "Overview", "Subsys", "Damage", "EVAs", "DEBUG" };
+#endif
 	/// <summary>
 	/// 
 	/// </summary>
@@ -109,6 +113,9 @@ class CLS_FlightGui : MonoBehaviour{
 			//	break;
 			case 2:
 				BrokenParts();
+				break;
+			case 4:
+				DEBUGTAB();
 				break;
 			case 1:
 			case 3:
@@ -175,6 +182,21 @@ class CLS_FlightGui : MonoBehaviour{
 			}
 	}
 
+
+	/// <summary>Display function for the Debug tab.
+	/// </summary>
+	private void DEBUGTAB() {
+		if (GUILayout.Button("Break a part")) { }
+		if (GUILayout.Button("Reset tanks")) {
+			foreach (KeyValuePair<string, List<PartResource>> kvp in Backend.Resources)
+				if (ConfigSettings.ratesPerKerbal[kvp.Key] > 0)
+					foreach (PartResource pRes in kvp.Value)
+						pRes.amount = pRes.maxAmount;
+				else
+					foreach (PartResource pRes in kvp.Value)
+						pRes.amount = 0;
+		}
+	}
 
 	private void drawSettingsWindow(int id) {
 		CDebug.log("GUI point 2.3");
