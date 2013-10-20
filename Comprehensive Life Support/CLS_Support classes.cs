@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+
+/// <summary>
+/// Contains methods for broken parts, as well as an internal ENUM for the possible types of breaks.
+/// </summary>
 internal class BrokenPart
 {
 	readonly int id;
@@ -15,7 +19,7 @@ internal class BrokenPart
 	private float severity, sevMult;
 
 
-	/// <param name="partHash">Hash of the part that owns this break</param>
+	/// <param name="owner">Part that owns this break</param>
 	/// <param name="problem">The type of problem</param>
 	/// <param name="initialSeverity">The rate at which it causes a resource to be lost, if any.</param>
 	/// <param name="severityMultiplier"></param>
@@ -73,6 +77,7 @@ class Backend
 	internal static Dictionary<string, double> ResourceMaximums;
 	internal static Dictionary<string, int> ETTLs;
 	internal static Dictionary<string, KerbalBiometric> KerbalHealth = new Dictionary<string,KerbalBiometric>();
+	internal static Dictionary<string, Dictionary<int, double>> ResourceRates = new Dictionary<string,Dictionary<int,double>>();
 
 	internal static List<BrokenPart> BrokenParts = new List<BrokenPart>();
 
@@ -117,8 +122,14 @@ class Backend
 
 	/// <summary>Register a resource production/consumption rate
 	/// </summary>
-	internal static void registerRate(string partID, string resName, double rate){
-		CDebug.log("registerRate not implemented!");
+	internal static void registerRate(int partID, string resName, double rate){
+		ResourceRates[resName][partID] = rate;
+	}
+	internal static double getRate(string resname) {
+		double rate = 0.0;
+		foreach (KeyValuePair<int, double> kvp in ResourceRates[resname])
+			rate += kvp.Value;
+		return rate;
 	}
 
 
