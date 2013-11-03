@@ -143,6 +143,13 @@ class Backend
 		buildResourceTankLists(ves);
 		InitETTLs();
 	}
+
+	internal static void KillKerbal(ProtoCrewMember unluckyBastard) {
+		unluckyBastard.Die();
+		unluckyBastard.seat.part.RemoveCrewmember(unluckyBastard); 
+		//Yes, this is ugly. No, I don't know how to get it to -actually- kill a Kerbal instead of just listing it as "killed".
+		//Without doing this, the kerbal can still EVA, etc.
+	}
 }
 
 

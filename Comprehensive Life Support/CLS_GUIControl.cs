@@ -186,17 +186,41 @@ class CLS_FlightGui : MonoBehaviour{
 	/// <summary>Display function for the Debug tab.
 	/// </summary>
 	private void DEBUGTAB() {
+		//CDebug.log("GUI point 2.2.4");
+		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("Break a part")) { }
 		if (GUILayout.Button("Reset tanks")) {
-			foreach (KeyValuePair<string, List<PartResource>> kvp in Backend.Resources)
-				if (ConfigSettings.ratesPerKerbal[kvp.Key] > 0)
-					foreach (PartResource pRes in kvp.Value)
-						pRes.amount = pRes.maxAmount;
+			foreach (KeyValuePair<string, List<PartResource>> kvp in Backend.Resources) {
+				if (ConfigSettings.ratesPerKerbal.ContainsKey(kvp.Key)) {
+					CDebug.log("RESET RESOURCE: " + kvp.Key);
+					if (ConfigSettings.ratesPerKerbal[kvp.Key] > 0)
+						foreach (PartResource pRes in kvp.Value)
+							pRes.amount = pRes.maxAmount;
+					else
+						foreach (PartResource pRes in kvp.Value)
+							pRes.amount = 0;
+				}
 				else
-					foreach (PartResource pRes in kvp.Value)
-						pRes.amount = 0;
+					CDebug.log("SKIPPING RESOURCE: " + kvp.Key + " (Not in rates dictionary)");
+			}
 		}
+		GUILayout.EndHorizontal();
+		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Kill all Kerbals")) {
+			foreach (ProtoCrewMember unluckyBastard in ControlledVessel.GetVesselCrew())
+				Backend.KillKerbal(unluckyBastard);
+		}
+		if (GUILayout.Button("Kill a Kerbal")) {
+			Backend.KillKerbal(ControlledVessel.GetVesselCrew()[UnityEngine.Random.Range(0, ControlledVessel.GetVesselCrew().Count - 1)]);
+		}
+		GUILayout.EndHorizontal();
+
+		GUILayout.Space(5);
+		GUILayout.Label("Rates:");
+		foreach (KeyValuePair<string, double> kvp in ConfigSettings.ratesPerKerbal)
+			GUILayout.Label(kvp.Key + ": " + kvp.Value, GUILayout.MaxHeight(10));
 	}
+
 
 	private void drawSettingsWindow(int id) {
 		CDebug.log("GUI point 2.3");
