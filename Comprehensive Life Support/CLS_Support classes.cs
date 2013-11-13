@@ -78,7 +78,9 @@ class Backend
 	internal static Dictionary<string, int> ETTLs;
 	internal static Dictionary<string, KerbalBiometric> KerbalHealth = new Dictionary<string,KerbalBiometric>();
 	internal static Dictionary<string, Dictionary<int, double>> ResourceRates = new Dictionary<string,Dictionary<int,double>>();
+	
 	internal static List<BrokenPart> BrokenParts = new List<BrokenPart>();
+	internal static List<BreakablePart> BreakableParts = new List<BreakablePart>();
 
 	#region Initializers
 	/// <summary>For initialization, non-flight-locked.
@@ -125,6 +127,10 @@ class Backend
 			rate += kvp.Value;
 		return rate;
 	}
+
+
+	internal static void regBreakablePart(BreakablePart p) { BreakableParts.Add(p);	}
+	internal static void regBrokenPart(BrokenPart broken) { BrokenParts.Add(broken); }
 
 
 	/// <summary>

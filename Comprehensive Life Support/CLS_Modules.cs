@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-class CLS_LivableArea : PartModule
+class CLS_LivableArea : BreakablePart
 {
-	private readonly static BrokenPart.BreakType possibleBreaks =
-		BrokenPart.BreakType.BadFilter |
-		BrokenPart.BreakType.LeakOxygen |
-		BrokenPart.BreakType.LeakWater;
-	private BrokenPart.BreakType currentlyBroken = new BrokenPart.BreakType();
+	
+	protected override BrokenPart.BreakType possibleBreaks {
+		get {
+			return BrokenPart.BreakType.BadFilter | 
+				BrokenPart.BreakType.LeakOxygen |
+				BrokenPart.BreakType.LeakWater;
+		}
+	}
 
 
 	[KSPEvent(active = false, guiActive = true, guiName = "Do repairs")]
@@ -24,10 +27,12 @@ class CLS_LivableArea : PartModule
 	private static void Awake() { CDebug.log("LivableArea Awoken."); }
 	private static void Start() { CDebug.log("LivableArea started."); }
 	public override void OnStart(StartState state) {
-		if (HighLogic.LoadedSceneIsFlight)
+		if (HighLogic.LoadedSceneIsFlight) {
+			Backend.regBreakablePart(this);
 			foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
 				if (!Backend.KerbalHealth.ContainsKey(crewMem.name))
 					Backend.KerbalHealth[crewMem.name] = new KerbalBiometric();
+		}
 	}
 	public override void OnLoad(ConfigNode node) { CDebug.log(node.ToString()); }
 
@@ -122,5 +127,28 @@ class CLS_LivableArea : PartModule
 
 
 		//Roll for breaks
+	}
+
+	internal override void BreakRandom() {
+		CDebug.log("Can't do that, not implemented!");
+		throw new NotImplementedException();
+	}
+}
+
+
+
+/// <summary>
+/// The class from which all breakable CLS parts will derive. Helps to unify backend, theoretically.
+/// Also should make sure that all breakable parts share the same setup.
+/// </summary>
+abstract class BreakablePart : PartModule {
+	protected abstract BrokenPart.BreakType possibleBreaks { get; }
+	protected BrokenPart.BreakType currentlyBroken = new BrokenPart.BreakType();
+
+	internal abstract void BreakRandom();
+	internal bool BreakSpecific(BrokenPart.BreakType brkTyp) {
+		currentlyBroken |= brkTyp & possibleBreaks;
+		CDebug.log("I'm not adding this to the BrokenPart list, and you can't make me without coding it yourself!");
+		return (brkTyp & possibleBreaks) > 0;
 	}
 }

@@ -188,7 +188,9 @@ class CLS_FlightGui : MonoBehaviour{
 	private void DEBUGTAB() {
 		//CDebug.log("GUI point 2.2.4");
 		GUILayout.BeginHorizontal();
-		if (GUILayout.Button("Break a part")) { }
+		if (GUILayout.Button("Break a part")) {
+			Backend.BreakableParts[UnityEngine.Random.Range(0, Backend.BreakableParts.Count - 1)].BreakRandom();
+		}
 		if (GUILayout.Button("Reset tanks")) {
 			foreach (KeyValuePair<string, List<PartResource>> kvp in Backend.Resources) {
 				if (ConfigSettings.ratesPerKerbal.ContainsKey(kvp.Key)) {
