@@ -15,18 +15,18 @@ internal class BrokenPart
 {
 	readonly int id;
 	readonly string partName;
-	private BreakType problem;
+	private BreakType problems;
 	private float severity, sevMult;
 
 
 	/// <param name="owner">Part that owns this break</param>
-	/// <param name="problem">The type of problem</param>
+	/// <param name="problems">The type of problem</param>
 	/// <param name="initialSeverity">The rate at which it causes a resource to be lost, if any.</param>
 	/// <param name="severityMultiplier"></param>
 	internal BrokenPart(Part owner, BreakType problem, float initialSeverity = -1, float severityMultiplier = 1.01f) {
 		id = owner.GetHashCode();
 		partName = owner.name;
-		this.problem = problem;
+		this.problems = problem;
 		severity = initialSeverity;
 		sevMult = severityMultiplier;
 	}
@@ -34,9 +34,19 @@ internal class BrokenPart
 
 	internal float Severity() {return severity;}
 
-	internal BreakType Problems() { return problem; }
+	internal BreakType Problems() { return problems; }
 
 
+	/// <summary>
+	/// Compares the breaks in each part to see if they're the same.
+	/// </summary>
+	internal bool EquivalentBreaks(BrokenPart BP) {
+		return this.problems == BP.problems;
+	}
+
+
+	/// <summary>Matches if obj is derived from BrokenPart and ids match.
+	/// </summary>
 	public override bool Equals(object obj) {
 		if (obj.GetType().IsAssignableFrom(typeof(BrokenPart)))
 			return ((BrokenPart)obj).id == this.id;
@@ -45,7 +55,7 @@ internal class BrokenPart
 
 
 	public override string ToString() {
-		return partName + " [" + id + "]: \n" + problem + "\n " + severity + " x " + sevMult;
+		return partName + " [" + id + "]: \n" + problems + "\n " + severity + " x " + sevMult;
 	}
 
 
