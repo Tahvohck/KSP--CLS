@@ -37,6 +37,18 @@ internal class BrokenPart
 	internal BreakType Problems() { return problem; }
 
 
+	public override bool Equals(object obj) {
+		if (obj.GetType().IsAssignableFrom(typeof(BrokenPart)))
+			return ((BrokenPart)obj).id == this.id;
+		return false;
+	}
+
+
+	public override string ToString() {
+		return partName + " [" + id + "]: \n" + problem + "\n " + severity + " x " + sevMult;
+	}
+
+
 	/// <summary>Enumerator for types of breaks.
 	/// </summary>
 	[Flags]
