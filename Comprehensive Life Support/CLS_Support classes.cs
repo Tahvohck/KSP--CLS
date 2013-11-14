@@ -78,26 +78,21 @@ class Backend
 	internal static Dictionary<string, int> ETTLs;
 	internal static Dictionary<string, KerbalBiometric> KerbalHealth = new Dictionary<string,KerbalBiometric>();
 	internal static Dictionary<string, Dictionary<int, double>> ResourceRates = new Dictionary<string,Dictionary<int,double>>();
-
+	
 	internal static List<BrokenPart> BrokenParts = new List<BrokenPart>();
+	internal static List<BreakablePart> BreakableParts = new List<BreakablePart>();
 
-	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
-	/// This walk also determines the maximum stored amount of the resource.
+	#region Initializers
+	/// <summary>For initialization, non-flight-locked.
 	/// </summary>
-	internal static void buildResourceTankLists(Vessel ves) {
-		ResourceMaximums = new Dictionary<string, double>();
-		Resources = new Dictionary<string, List<PartResource>>();
+	internal static void Initialize() { }
 
-		foreach (Part p in ves.Parts)
-			foreach (PartResource res in p.Resources)
-				if (Resources.ContainsKey(res.resourceName)) {
-					Resources[res.resourceName].Add(res);
-					ResourceMaximums[res.resourceName] += res.maxAmount;
-				}
-				else {
-					Resources[res.resourceName] = new List<PartResource> { res };
-					ResourceMaximums[res.resourceName] = res.maxAmount;
-				}
+
+	/// <summary>For initialization, flight-locked. 
+	/// </summary>
+	internal static void InitializeFlight(Vessel ves) {
+		buildResourceTankLists(ves);
+		InitETTLs();
 	}
 
 
@@ -108,6 +103,7 @@ class Backend
 		foreach (string s in ConfigSettings.CLSResourceNames)
 			ETTLs[s] = 0;
 	}
+	#endregion
 
 
 	/// <summary>Get the current amount of 'resName' on the ship.
@@ -133,15 +129,39 @@ class Backend
 	}
 
 
-	/// <summary>For initialization, non-flight-locked.
-	/// </summary>
-	internal static void Initialize() { }
+	internal static void regBreakablePart(BreakablePart p) { BreakableParts.Add(p);	}
+	internal static void regBrokenPart(BrokenPart broken) { BrokenParts.Add(broken); }
 
-	/// <summary>For initialization, flight-locked. 
+
+	/// <summary>
+	/// Kill a kerbal and erase them from the ship.
 	/// </summary>
-	internal static void InitializeFlight(Vessel ves) {
-		buildResourceTankLists(ves);
-		InitETTLs();
+	/// <param name="unluckyBastard">The unlucky bastard.</param>
+	internal static void KillKerbal(ProtoCrewMember unluckyBastard) {
+		unluckyBastard.Die();
+		unluckyBastard.seat.part.RemoveCrewmember(unluckyBastard); 
+		//Yes, this is ugly. No, I don't know how to get it to -actually- kill a Kerbal instead of just listing it as "killed".
+		//Without doing this, the kerbal can still EVA, etc.
+	}
+
+
+	/// <summary>Pulse through vessel, discover resource tanks. Add them to appropriate list.
+	/// This walk also determines the maximum stored amount of the resource.
+	/// </summary>
+	internal static void buildResourceTankLists(Vessel ves) {
+		ResourceMaximums = new Dictionary<string, double>();
+		Resources = new Dictionary<string, List<PartResource>>();
+
+		foreach (Part p in ves.Parts)
+			foreach (PartResource res in p.Resources)
+				if (Resources.ContainsKey(res.resourceName)) {
+					Resources[res.resourceName].Add(res);
+					ResourceMaximums[res.resourceName] += res.maxAmount;
+				}
+				else {
+					Resources[res.resourceName] = new List<PartResource> { res };
+					ResourceMaximums[res.resourceName] = res.maxAmount;
+				}
 	}
 }
 

@@ -61,7 +61,11 @@ class CLS_FlightGui : MonoBehaviour{
 	private static Rect SettingsBox = new Rect(145, 0, 400, 300);
 	private static int statusToolbarSelection = 0;
 	private static GUIStyle centeredText;
+#if (DEBUG == false)
 	private static string[] statusToolbarButtons = { "Overview", "Subsys", "Damage", "EVAs" };
+#else
+	private static string[] statusToolbarButtons = { "Overview", "Subsys", "Damage", "EVAs", "DEBUG" };
+#endif
 	/// <summary>
 	/// 
 	/// </summary>
@@ -109,6 +113,9 @@ class CLS_FlightGui : MonoBehaviour{
 			//	break;
 			case 2:
 				BrokenParts();
+				break;
+			case 4:
+				DEBUGTAB();
 				break;
 			case 1:
 			case 3:
@@ -173,6 +180,47 @@ class CLS_FlightGui : MonoBehaviour{
 			foreach (BrokenPart p in Backend.BrokenParts) {
 				//GUILayout.Label(p.name);
 			}
+	}
+
+
+	/// <summary>Display function for the Debug tab.
+	/// </summary>
+	private void DEBUGTAB() {
+		//CDebug.log("GUI point 2.2.4");
+		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Break a part")) {
+			Backend.BreakableParts[UnityEngine.Random.Range(0, Backend.BreakableParts.Count - 1)].BreakRandom();
+		}
+		if (GUILayout.Button("Reset tanks")) {
+			foreach (KeyValuePair<string, List<PartResource>> kvp in Backend.Resources) {
+				if (ConfigSettings.ratesPerKerbal.ContainsKey(kvp.Key)) {
+					CDebug.log("RESET RESOURCE: " + kvp.Key);
+					if (ConfigSettings.ratesPerKerbal[kvp.Key] > 0)
+						foreach (PartResource pRes in kvp.Value)
+							pRes.amount = pRes.maxAmount;
+					else
+						foreach (PartResource pRes in kvp.Value)
+							pRes.amount = 0;
+				}
+				else
+					CDebug.log("SKIPPING RESOURCE: " + kvp.Key + " (Not in rates dictionary)");
+			}
+		}
+		GUILayout.EndHorizontal();
+		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Kill all Kerbals")) {
+			foreach (ProtoCrewMember unluckyBastard in ControlledVessel.GetVesselCrew())
+				Backend.KillKerbal(unluckyBastard);
+		}
+		if (GUILayout.Button("Kill a Kerbal")) {
+			Backend.KillKerbal(ControlledVessel.GetVesselCrew()[UnityEngine.Random.Range(0, ControlledVessel.GetVesselCrew().Count - 1)]);
+		}
+		GUILayout.EndHorizontal();
+
+		GUILayout.Space(5);
+		GUILayout.Label("Rates:");
+		foreach (KeyValuePair<string, double> kvp in ConfigSettings.ratesPerKerbal)
+			GUILayout.Label(kvp.Key + ": " + kvp.Value, GUILayout.MaxHeight(10));
 	}
 
 
