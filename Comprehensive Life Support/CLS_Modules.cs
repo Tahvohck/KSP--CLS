@@ -63,10 +63,8 @@ class CLS_LivableArea : BreakablePart
 						Backend.KerbalHealth[crewMem.name].bloodstreamOxygen -= (dTime * percentOfWanted);
 						//CDebug.log(crewMem.name + " has " + Math.Floor(Backend.KerbalHealth[crewMem.name].bloodstreamOxygen) + " seconds to live.");
 					}
-					else {
-						crewMem.Die();
-						part.RemoveCrewmember(crewMem);
-					}
+					else
+						Backend.KillKerbal(crewMem);
 			}
 			else
 				foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
@@ -79,8 +77,7 @@ class CLS_LivableArea : BreakablePart
 			//TODO CO2 KILL
 			if (part.Resources["CO2"].amount == part.Resources["CO2"].maxAmount)
 				foreach (ProtoCrewMember crewMem in part.protoModuleCrew) {
-					crewMem.Die();
-					part.RemoveCrewmember(crewMem);
+					Backend.KillKerbal(crewMem);
 				}
 
 			//get food
@@ -95,10 +92,8 @@ class CLS_LivableArea : BreakablePart
 				foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
 					if (Backend.KerbalHealth[crewMem.name].bloodstreamSnacks > 0)
 						Backend.KerbalHealth[crewMem.name].bloodstreamSnacks -= (dTime * percentOfWanted);
-					else {
-						crewMem.Die();
-						part.RemoveCrewmember(crewMem);
-					}
+					else
+						Backend.KillKerbal(crewMem);
 			}
 			else
 				foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
@@ -117,10 +112,8 @@ class CLS_LivableArea : BreakablePart
 				foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
 					if (Backend.KerbalHealth[crewMem.name].bloodstreamWater > 0)
 						Backend.KerbalHealth[crewMem.name].bloodstreamWater -= (dTime * percentOfWanted);
-					else {
-						crewMem.Die();
-						part.RemoveCrewmember(crewMem);
-					}
+					else 
+						Backend.KillKerbal(crewMem);
 			}
 			else
 				foreach (ProtoCrewMember crewMem in part.protoModuleCrew)
