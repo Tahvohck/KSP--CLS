@@ -125,7 +125,6 @@ class CLS_LivableArea : BreakablePart
 
 	internal override void BreakRandom() {
 		CDebug.log("Can't do that, not implemented!");
-		throw new NotImplementedException();
 	}
 }
 
