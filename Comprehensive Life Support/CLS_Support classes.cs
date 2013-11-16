@@ -73,6 +73,19 @@ internal class BrokenPart
 
 
 
+internal interface LSResourceProducer {
+	void getType();
+	string getStatus();
+	PartResource[] getInResource();
+	PartResource[] getOutResource();
+	void activate();
+	void deactivate();
+	void increaseRate();
+	void decreaseRate();
+}
+
+
+
 /// <summary>
 /// Used for keeping track of an inividual kerbal's biometrics.
 /// </summary>
