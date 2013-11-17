@@ -7,6 +7,20 @@ using System.Text;
 using UnityEngine;
 
 
+
+internal interface LSResourceProducer {
+	void getType();
+	string getStatus();
+	PartResource[] getInResource();
+	PartResource[] getOutResource();
+	void activate();
+	void deactivate();
+	void increaseRate();
+	void decreaseRate();
+}
+
+
+
 /// <summary>
 /// Contains methods for broken parts, as well as an internal ENUM for the possible types of breaks.
 /// </summary>
@@ -69,19 +83,6 @@ internal class BrokenPart
 		ElectronicsFailure = 0x08,
 		BadFilter = 0x10
 	}
-}
-
-
-
-internal interface LSResourceProducer {
-	void getType();
-	string getStatus();
-	PartResource[] getInResource();
-	PartResource[] getOutResource();
-	void activate();
-	void deactivate();
-	void increaseRate();
-	void decreaseRate();
 }
 
 
