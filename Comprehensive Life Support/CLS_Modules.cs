@@ -122,10 +122,6 @@ class CLS_LivableArea : BreakablePart
 
 		//Roll for breaks
 	}
-
-	internal override void BreakRandom() {
-		CDebug.log("Can't do that, not implemented!");
-	}
 }
 
 
@@ -138,10 +134,19 @@ abstract class BreakablePart : PartModule {
 	protected abstract BrokenPart.BreakType possibleBreaks { get; }
 	protected BrokenPart.BreakType currentlyBroken = new BrokenPart.BreakType();
 
-	internal abstract void BreakRandom();
+	internal void BreakRandom() {
+		BreakSpecific(possibleBreaks); //Dummy code for testing. This will break a part in every possible way.
+		//TODO Actually implement.
+		CDebug.log("I've got a hammer, and this sure looks like a nail...");
+	}
 	internal bool BreakSpecific(BrokenPart.BreakType brkTyp) {
-		currentlyBroken |= brkTyp & possibleBreaks;
-		CDebug.log("I'm not adding this to the BrokenPart list, and you can't make me without coding it yourself!");
+		currentlyBroken |= brkTyp & possibleBreaks;		//<currentlyBroken> += the intersection of <possibleBreaks> and <brkTyp>
+		
+		if (Backend.BrokenParts.ContainsKey(part.GetHashCode()))			//If already broken...
+			Backend.BrokenParts[part.GetHashCode()].UpdateProblems(currentlyBroken);	//Update the break
+		else
+			Backend.regBrokenPart(new BrokenPart(part, currentlyBroken));	//Otherwise, register the new break
+		
 		return (brkTyp & possibleBreaks) > 0;
 	}
 }

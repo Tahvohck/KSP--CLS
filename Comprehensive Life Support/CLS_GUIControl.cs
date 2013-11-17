@@ -177,8 +177,8 @@ class CLS_FlightGui : MonoBehaviour{
 		if (Backend.BrokenParts.Count == 0)
 			GUILayout.Label("No broken parts! Awesome!");
 		else
-			foreach (BrokenPart p in Backend.BrokenParts) {
-				//GUILayout.Label(p.name);
+			foreach (KeyValuePair<int, BrokenPart> kvp in Backend.BrokenParts) {
+				GUILayout.Label(kvp.Value.partName);
 			}
 	}
 

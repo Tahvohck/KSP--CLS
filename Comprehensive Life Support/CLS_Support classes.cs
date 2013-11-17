@@ -13,8 +13,8 @@ using UnityEngine;
 /// </summary>
 internal class BrokenPart
 {
-	readonly int id;
-	readonly string partName;
+	internal readonly int id;
+	internal readonly string partName;
 	private BreakType problems;
 	private float severity, sevMult;
 
@@ -35,6 +35,7 @@ internal class BrokenPart
 	internal float Severity() {return severity;}
 
 	internal BreakType Problems() { return problems; }
+	internal void UpdateProblems(BrokenPart.BreakType updatedProblems) { problems |= updatedProblems; }
 
 
 	/// <summary>
@@ -114,7 +115,7 @@ class Backend
 	internal static Dictionary<string, KerbalBiometric> KerbalHealth = new Dictionary<string,KerbalBiometric>();
 	internal static Dictionary<string, Dictionary<int, double>> ResourceRates = new Dictionary<string,Dictionary<int,double>>();
 	
-	internal static List<BrokenPart> BrokenParts = new List<BrokenPart>();
+	internal static Dictionary<int, BrokenPart> BrokenParts = new Dictionary<int,BrokenPart>();
 	internal static List<BreakablePart> BreakableParts = new List<BreakablePart>();
 
 	#region Initializers
@@ -165,7 +166,13 @@ class Backend
 
 
 	internal static void regBreakablePart(BreakablePart p) { BreakableParts.Add(p);	}
-	internal static void regBrokenPart(BrokenPart broken) { BrokenParts.Add(broken); }
+	internal static void regBrokenPart(BrokenPart broken) { BrokenParts.Add(broken.id, broken); }
+	internal static void updateBrokenPart(BrokenPart broken) {
+		if (broken.Problems() == 0)
+			BrokenParts.Remove(broken.id);
+		else
+			BrokenParts[broken.id].UpdateProblems(broken.Problems());
+	}
 
 
 	/// <summary>
