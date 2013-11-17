@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 
@@ -189,7 +188,7 @@ class CLS_FlightGui : MonoBehaviour{
 		//CDebug.log("GUI point 2.2.4");
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("Break a part")) {
-			Backend.BreakableParts[UnityEngine.Random.Range(0, Backend.BreakableParts.Count - 1)].BreakRandom();
+			Backend.BreakableParts[UnityEngine.Random.Range(0, Backend.BreakableParts.Count)].BreakRandom();
 		}
 		if (GUILayout.Button("Reset tanks")) {
 			foreach (KeyValuePair<string, List<PartResource>> kvp in Backend.Resources) {
@@ -213,7 +212,7 @@ class CLS_FlightGui : MonoBehaviour{
 				Backend.KillKerbal(unluckyBastard);
 		}
 		if (GUILayout.Button("Kill a Kerbal")) {
-			Backend.KillKerbal(ControlledVessel.GetVesselCrew()[UnityEngine.Random.Range(0, ControlledVessel.GetVesselCrew().Count - 1)]);
+			Backend.KillKerbal(ControlledVessel.GetVesselCrew()[UnityEngine.Random.Range(0, ControlledVessel.GetVesselCrew().Count)]);
 		}
 		GUILayout.EndHorizontal();
 
