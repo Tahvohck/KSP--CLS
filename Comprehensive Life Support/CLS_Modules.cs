@@ -133,11 +133,32 @@ abstract class BreakablePart : PartModule {
 	protected abstract BrokenPart.BreakType possibleBreaks { get; }
 	protected BrokenPart.BreakType currentlyBroken = new BrokenPart.BreakType();
 
+
+	/// <summary>
+	/// Breaks in a random way, based on the possible break types.
+	/// </summary>
 	internal void BreakRandom() {
-		BreakSpecific(possibleBreaks); //Dummy code for testing. This will break a part in every possible way.
-		//TODO Actually implement.
-		CDebug.log("I've got a hammer, and this sure looks like a nail...");
+		List<BrokenPart.BreakType> possibleBreaksList = new List<BrokenPart.BreakType>();
+		foreach (BrokenPart.BreakType bt in Enum.GetValues(typeof(BrokenPart.BreakType)))
+			if ((possibleBreaks & bt) > 0)
+				possibleBreaksList.Add(bt);
+
+		foreach (BrokenPart.BreakType bt in possibleBreaksList.ToArray())
+			if (UnityEngine.Random.Range(0, possibleBreaksList.Count) <= 1.0 / possibleBreaksList.Count) {
+				BreakSpecific(bt);
+				CDebug.log("Break chosen on part {" + part + "} : " + bt);
+				break;
+			}
+			else if (possibleBreaksList.IndexOf(bt) == possibleBreaksList.Count - 1) {
+				BreakSpecific(possibleBreaksList[0]);
+				CDebug.log("Default break: " + bt);
+			}
 	}
+
+
+	/// <summary>
+	/// Breaks the current part in a specific way, but only if the part can break that way.
+	/// </summary>
 	internal bool BreakSpecific(BrokenPart.BreakType brkTyp) {
 		currentlyBroken |= brkTyp & possibleBreaks;		//<currentlyBroken> += the intersection of <possibleBreaks> and <brkTyp>
 		
