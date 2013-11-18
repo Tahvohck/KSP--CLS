@@ -143,16 +143,7 @@ abstract class BreakablePart : PartModule {
 			if ((possibleBreaks & bt) > 0)
 				possibleBreaksList.Add(bt);
 
-		foreach (BrokenPart.BreakType bt in possibleBreaksList.ToArray())
-			if (UnityEngine.Random.Range(0, possibleBreaksList.Count) <= 1.0 / possibleBreaksList.Count) {
-				BreakSpecific(bt);
-				CDebug.log("Break chosen on part {" + part + "} : " + bt);
-				break;
-			}
-			else if (possibleBreaksList.IndexOf(bt) == possibleBreaksList.Count - 1) {
-				BreakSpecific(possibleBreaksList[0]);
-				CDebug.log("Default break: " + bt);
-			}
+		BreakSpecific(possibleBreaksList[UnityEngine.Random.Range(0, possibleBreaksList.Count)]);
 	}
 
 
